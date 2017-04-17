@@ -37,3 +37,4 @@ bower_components
 ._*
 .Spotlight-V100
 .Trashes
+.vscode
