@@ -72,7 +72,7 @@ In this case, the URL is matched by a nested route and the `matches` attribute c
 As you can see, YARL does nothing else than translating the URL. If we give it a string as `cb` it will be returned on a URL match, but you'd probably want to pass a function as `cb` to be executed after the match, or a React component in order to display it after routing.
 
 ## Detecting URL changes
-The second nice feature that any router must have is detecting changes in browser's location to react properly to them. That's why we need a routing strategy, the mechanism to define what is a URL change, and how to navigate without a page refresh. The only one shipped with YARL is the (HTML5's pushState strategy)[https://developer.mozilla.org/en-US/docs/Web/API/History_API]. If you need a hash strategy you need to build it yourself (pull requests are welcome).
+The second nice feature that any router must have is detecting changes in browser's location to react properly to them. That's why we need a routing strategy, the mechanism to define what is a URL change, and how to navigate without a page refresh. The only one shipped with YARL is the [HTML5's pushState strategy](https://developer.mozilla.org/en-US/docs/Web/API/History_API). If you need a hash strategy you need to build it yourself (pull requests are welcome).
 
 We create our router like this:
 ```js
@@ -87,7 +87,7 @@ router.start();
 ```
 
 ## Navigating
-YARL come with some useful methods to let the developers navigate programmaticaly withot hassle.
+YARL come with some useful methods to let the developers navigate programmatically without hassle.
 
 ```js
 // Go to the `/users` path
