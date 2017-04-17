@@ -1,21 +1,21 @@
-YARL: Yet another router library, but the simplest one
+UrlHub: Yet another router library, but the simplest one
 ======================================================
 
-Is another new routing library needed? Probably not, YARL is a router that make the work like any other javascript routing library. The difference to others is that this one is made to be understood completely just by reading this.
+Is another new routing library needed? Probably not, UrlHub is a router that make the work like any other javascript routing library. The difference to others is that UrlHub is made to be understood completely just by reading this.
 
 ## Installation
 
 ```
-npm install yarl
+npm install urlhub
 ```
 
 ## Usage
 
-Think of YARL as a library to translate URLs into something else (that's a nice definition for a router). Let's create a test router.
+Think of UrlHub as a library to translate URLs into something else (that's a nice definition for a router). Let's create a test router.
 
 ```js
-var yarl = require('yarl');
-var pushStrategy = require('yarl/pushStrategy');
+var urlhub = require('urlhub');
+var pushStrategy = require('urlhub/pushStrategy');
 
 var routes = [
   {path: '/home', cb: 'Home'},
@@ -24,7 +24,7 @@ var routes = [
   ]}
 ];
 
-var router = yarl.create( routes, {strategy: pushStrategy} );
+var router = urlhub.create( routes, {strategy: pushStrategy} );
 router.start();
 ```
 
@@ -69,14 +69,14 @@ location = router.match('/users/937264923');
 ```
 In this case, the URL is matched by a nested route and the `matches` attribute contains the `cb`s of all the parent routes too. That's why the `matches` attributes is an array.
 
-As you can see, YARL does nothing else than translating the URL. If we give it a string as `cb` it will be returned on a URL match, but you'd probably want to pass a function as `cb` to be executed after the match, or a React component in order to display it after routing.
+As you can see, UrlHub does nothing else than translating the URL. If we give it a string as `cb` it will be returned on a URL match, but you'd probably want to pass a function as `cb` to be executed after the match, or a React component in order to display it after routing.
 
 ## Detecting URL changes
-The second nice feature that any router must have is detecting changes in browser's location to react properly to them. That's why we need a routing strategy, the mechanism to define what is a URL change, and how to navigate without a page refresh. The only one shipped with YARL is the [HTML5's pushState strategy](https://developer.mozilla.org/en-US/docs/Web/API/History_API). If you need a hash strategy you need to build it yourself (pull requests are welcome).
+The second nice feature that any router must have is detecting changes in browser's location to react properly to them. That's why we need a routing strategy, the mechanism to define what is a URL change, and how to navigate without a page refresh. The only one shipped with UrlHub is the [HTML5's pushState strategy](https://developer.mozilla.org/en-US/docs/Web/API/History_API). If you need a hash strategy you need to build it yourself (pull requests are welcome).
 
 We create our router like this:
 ```js
-var router = yarl.create( routes, {strategy: pushStrategy} );
+var router = urlhub.create( routes, {strategy: pushStrategy} );
 router.onChange(function( location ){
   // The location object is the same returned by the `match` method.
   // This will be triggered by any change in the browser's URL.
@@ -87,7 +87,7 @@ router.start();
 ```
 
 ## Navigating
-YARL come with some useful methods to let the developers navigate programmatically without hassle.
+UrlHub come with some useful methods to let the developers navigate programmatically without hassle.
 
 ```js
 // Go to the `/users` path

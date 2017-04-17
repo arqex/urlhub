@@ -1,5 +1,5 @@
 {
-  "name": "Yarl",
+  "name": "urlhub",
   "version": "0.0.1",
   "description": "Another router library, yet the simplest one.",
   "main": "urlhub.js",
