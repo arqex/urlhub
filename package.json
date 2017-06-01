@@ -5,6 +5,7 @@
   "main": "urlhub.js",
   "scripts": {
     "test": "node_modules/.bin/karma start karma.conf.js",
+    "travis": "node_modules/.bin/karma start karma.conf.js --single-run",
     "build": "node_modules/.bin/gulp"
   },
   "author": "",

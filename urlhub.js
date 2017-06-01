@@ -25,14 +25,14 @@ else {
 // The lib
 var urlhub = {
   create: function( routes, options ){
-    return new Yarl( routes, options );
+    return new Urlhub( routes, options );
   },
   joinUrls: joinUrls // just for testing never used, see helpers at bottom
 }
 
 
 // The class
-var Yarl = function( routes, options ){
+var Urlhub = function( routes, options ){
   if( !options || !options.strategy ){
     throw new Error('Router needs an strategy to listen to url changes.');
   }
@@ -186,7 +186,7 @@ var prototype = {
   }
 }
 
-for( var method in prototype ) Yarl.prototype[ method ] = prototype[method];
+for( var method in prototype ) Urlhub.prototype[ method ] = prototype[method];
 
 module.exports = urlhub;
 
