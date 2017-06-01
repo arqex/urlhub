@@ -30,4 +30,4 @@ var pushStrategy = {
   }
 };
 
-export default pushStrategy;
+module.exports = pushStrategy;

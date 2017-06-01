@@ -1,15 +1,3 @@
-var test = require('tape');
-var Url = require('url');
-
-global.parseUrl = function( url ){
-  var parsed = Url.parse( url );
-  parsed.search = parsed.search || '';
-  parsed.hash = parsed.hash || '';
-  return parsed;
-}
-
-var urlhub = require('../urlhub');
-
 var routes = [
   { path: '/', cb: 'root', children: [
     { path: 'sub', cb: 'sub', children: [
@@ -27,126 +15,156 @@ var routes = [
 
 var router = urlhub.create( routes, {strategy: {}} );
 
+describe( 'Route match test', function(){
+  it('join routes test', function() {
+    expect( urlhub.joinUrls() ).toBe( '/' );
+    expect( urlhub.joinUrls('/') ).toBe( '/' );
+    expect( urlhub.joinUrls('/', '') ).toBe( '/' );
+    expect( urlhub.joinUrls('', '') ).toBe( '/' );
+    expect( urlhub.joinUrls('', '/') ).toBe( '/' );
 
-test('join routes test', t => {
-  t.equal( urlhub.joinUrls(), '/' );
-  t.equal( urlhub.joinUrls('/'), '/' );
-  t.equal( urlhub.joinUrls('/', ''), '/' );
-  t.equal( urlhub.joinUrls('', ''), '/' );
-  t.equal( urlhub.joinUrls('', '/'), '/' );
+    expect( urlhub.joinUrls('/', '/test') ).toBe( '/test' );
 
-  t.equal( urlhub.joinUrls('/', '/test'), '/test' );
+    expect( urlhub.joinUrls('test') ).toBe( '/test' );
+    expect( urlhub.joinUrls('test/') ).toBe( '/test' );
+    expect( urlhub.joinUrls('/test') ).toBe( '/test' );
+    expect( urlhub.joinUrls('', 'test') ).toBe( '/test' );
 
-  t.equal( urlhub.joinUrls('test'), '/test' );
-  t.equal( urlhub.joinUrls('test/'), '/test' );
-  t.equal( urlhub.joinUrls('/test'), '/test' );
-  t.equal( urlhub.joinUrls('', 'test'), '/test' );
-
-  t.equal( urlhub.joinUrls('test', 'path'), '/test/path' );
-  t.equal( urlhub.joinUrls('test/', 'path'), '/test/path' );
-  t.equal( urlhub.joinUrls('test/', '/path'), '/test/path' );
-  t.equal( urlhub.joinUrls('/test/', '/path/'), '/test/path' );
-
-  t.end();
-})
+    expect( urlhub.joinUrls('test', 'path') ).toBe( '/test/path' );
+    expect( urlhub.joinUrls('test/', 'path') ).toBe( '/test/path' );
+    expect( urlhub.joinUrls('test/', '/path') ).toBe( '/test/path' );
+    expect( urlhub.joinUrls('/test/', '/path/') ).toBe( '/test/path' );
+  })
 
 
-test('route match test', t => {
-  t.deepEqual( router.match('/').matches, ['root'], 'Root route match' );
-  t.deepEqual( router.match('/sub').matches, ['root', 'sub'], 'Subroute match' );
-  t.deepEqual( router.match('sub').matches, ['root', 'sub'], 'Relatative match' );
+  it('route match test', function() {
+    expect( router.match('/').matches, 'Root route match' ).toEqual(['root']);
+    expect( router.match('/sub').matches, 'Subroute match' ).toEqual(['root', 'sub']);
+    expect( router.match('sub').matches, 'Relatative match' ).toEqual(['root', 'sub']);
 
-  t.deepEqual( router.match('/sub/subsub').matches, ['root', 'sub', 'subsub'], 'Subsubroute match' );
-  t.deepEqual( router.match('/sub/subparam/param').matches, ['root', 'sub', 'subparam'], 'Subparam match' );
-  t.deepEqual( router.match('/sub/12/param').matches, ['root', 'sub', 'substarting'], 'Subroute starting with a param' );
-  t.deepEqual( router.match('/sub/whatever/weird').matches, ['root', 'sub', 'innerNotfound'], 'Inner not found' );
+    expect( router.match('/sub/subsub').matches, 'Subsubroute match' ).toEqual(['root', 'sub', 'subsub']);
+    expect( router.match('/sub/subparam/param').matches, 'Subparam match' ).toEqual(['root', 'sub', 'subparam']);
+    expect( router.match('/sub/12/param').matches, 'Subroute starting with a param' ).toEqual(['root', 'sub', 'substarting']);
+    expect( router.match('/sub/whatever/weird').matches, 'Inner not found' ).toEqual(['root', 'sub', 'innerNotfound']);
 
-  t.deepEqual( router.match('/second').matches, ['second'], 'Second route' );
-  t.deepEqual( router.match('/param/12').matches, ['param'], 'Route with params match' );
+    expect( router.match('/second').matches, 'Second route' ).toEqual(['second']);
+    expect( router.match('/param/12').matches, 'Route with params match' ).toEqual(['param']);
 
-  t.deepEqual( router.match('/multi/12/route/10').matches, ['multiparam'], 'Route with multiple inner params' );
+    expect( router.match('/multi/12/route/10').matches, 'Route with multiple inner params' ).toEqual(['multiparam']);
 
-  t.deepEqual( router.match('/undefined/whatever/more').matches, ['notfound'], 'Not found routes');
-  t.end();
+    expect( router.match('/undefined/whatever/more').matches, 'Not found routes').toEqual(['notfound'])
+  });
+
+  it('query parsing test', function() {
+    expect( router.match('/').query, 'No query in root' ).toEqual({});
+    expect( router.match('/sub').query, 'No query in subroute' )
+			.toEqual({});
+    expect( router.match('/sub/12/param').query, 'No query with params' )
+			.toEqual({});
+
+    expect( router.match('/?').query, 'Empty query in root' )
+			.toEqual({});
+    expect( router.match('/sub?').query, 'Empty query in subroute' )
+			.toEqual({});
+    expect( router.match('/sub/12/param?').query, 'Empty query with params' )
+			.toEqual({});
+
+    expect( router.match('/?#').query, 'Empty query in root with hash' )
+			.toEqual({});
+    expect( router.match('/sub?#').query, 'Empty query in subroute with hash' )
+			.toEqual({});
+    expect( router.match('/sub/12/param?#').query, 'Empty query with params with hash' )
+			.toEqual({});
+
+    expect( router.match('/?foo=bar').query, 'Foobar in root' )
+			.toEqual({foo: 'bar'});
+    expect( router.match('/sub?foo=bar').query, 'Foobar in subroute' )
+			.toEqual({foo: 'bar'});
+    expect( router.match('/sub/12/param?foo=bar').query, 'Foobar with params' )
+			.toEqual({foo: 'bar'});
+
+    expect( router.match('/#?foo=bar').query, 'No queries after hash' )
+			.toEqual({});
+
+    expect( router.match('/?foo=bar&second=ok').query, 'Compound query in root' )
+			.toEqual({foo: 'bar', second: 'ok'});
+    expect( router.match('/sub?foo=bar&second=ok').query, 'Compound query in subroute' )
+			.toEqual({foo: 'bar', second: 'ok'});
+    expect( router.match('/sub/12/param?foo=bar&second=ok').query, 'Compound query with params' )
+			.toEqual({foo: 'bar', second: 'ok'});
+
+    expect( router.match('/unknown?foo=bar&second=ok').query, 'Query in not found route' )
+			.toEqual({foo: 'bar', second: 'ok'});
+  });
+
+  it('Params parsing test', function() {
+    expect( router.match('/').params, 'No params in root' )
+			.toEqual({});
+    expect( router.match('/?foo=bar').params, 'No params in root with query' )
+			.toEqual({});
+    expect( router.match('/#hash').params, 'No params in root with hash' )
+			.toEqual({});
+
+    expect( router.match('/sub/subparam/10').params, 'Deep params' )
+			.toEqual({pn: '10'});
+    expect( router.match('/multi/12/route/10').params, 'Multiple inner params' )
+			.toEqual({param: '12', param2: '10'});
+    expect( router.match('/sub/foobar/param').params, 'Inner param' )
+			.toEqual({starting: 'foobar'});
+  });
+
+  it('Pathname test', function() {
+    expect( router.match('/').pathname, 'Pathname in root' )
+			.toEqual( '/' );
+    expect( router.match('/?foo=bar').pathname, 'Pathname in root with query' )
+			.toEqual( '/' );
+    expect( router.match('/#hash').pathname, 'Pathname in root with hash' )
+			.toEqual( '/' );
+
+    expect( router.match('/sub?foo=bar#hash').pathname, 'Pathname with query and hash' )
+			.toEqual( '/sub' );
+
+    expect( router.match('/sub/subparam/10').pathname, 'Pathname with params' )
+			.toEqual( '/sub/subparam/10' );
+    expect( router.match('/multi/12/route/10').pathname, 'Pathname with multiple params' )
+			.toEqual( '/multi/12/route/10' );
+  });
+
+  it('Hash test', function() {
+    expect( router.match('/').hash, 'No hash' )
+			.toEqual( '' );
+    expect( router.match('/sub').hash, 'No hash in subroute' )
+			.toEqual( '' );
+
+    expect( router.match('/#hash').hash, 'Hash in route' )
+			.toEqual( '#hash' );
+    expect( router.match('/sub#hash').hash, 'Hash in subroute' )
+			.toEqual( '#hash' );
+
+    expect( router.match('/sub#hash?foo=bar').hash, 'Query in hash' )
+			.toEqual( '#hash?foo=bar' );
+
+    expect( router.match('/sub?foo=bar#hash').hash, 'Hash with queries' )
+			.toEqual( '#hash' );
+
+    expect( router.match('/sub/subparam/10#hash').hash, 'Hash with params' )
+			.toEqual( '#hash' );
+  });
+
+  it('Route test', function() {
+    expect( router.match('/').route, 'Root route' )
+			.toEqual( '/' );
+    expect( router.match('/sub').route, 'Sub route' )
+			.toEqual( '/sub' );
+    expect( router.match('/sub?foo=bar#hash').route, 'Sub route with query and hash' )
+			.toEqual( '/sub' );
+    expect( router.match('/sub/subparam/hello').route, 'Sub route with params' )
+			.toEqual( '/sub/subparam/:pn' );
+    expect( router.match('/sub/notfound').route, 'Sub route notfound' )
+			.toEqual( '/sub/*' );
+    expect( router.match('/multi/12/route/10').route, 'Sub route with params' )
+			.toEqual( '/multi/:param/route/:param2' );
+    expect( router.match('/notfound').route, 'Not found' )
+			.toEqual( '/*' );
+  })
 });
-
-test('query parsing test', t => {
-  t.deepEqual( router.match('/').query, {}, 'No query in root' );
-  t.deepEqual( router.match('/sub').query, {}, 'No query in subroute' );
-  t.deepEqual( router.match('/sub/12/param').query, {}, 'No query with params' );
-
-  t.deepEqual( router.match('/?').query, {}, 'Empty query in root' );
-  t.deepEqual( router.match('/sub?').query, {}, 'Empty query in subroute' );
-  t.deepEqual( router.match('/sub/12/param?').query, {}, 'Empty query with params' );
-
-  t.deepEqual( router.match('/?#').query, {}, 'Empty query in root with hash' );
-  t.deepEqual( router.match('/sub?#').query, {}, 'Empty query in subroute with hash' );
-  t.deepEqual( router.match('/sub/12/param?#').query, {}, 'Empty query with params with hash' );
-
-  t.deepEqual( router.match('/?foo=bar').query, {foo: 'bar'}, 'Foobar in root' );
-  t.deepEqual( router.match('/sub?foo=bar').query, {foo: 'bar'}, 'Foobar in subroute' );
-  t.deepEqual( router.match('/sub/12/param?foo=bar').query, {foo: 'bar'}, 'Foobar with params' );
-
-  t.deepEqual( router.match('/#?foo=bar').query, {}, 'No queries after hash' );
-
-  t.deepEqual( router.match('/?foo=bar&second=ok').query, {foo: 'bar', second: 'ok'}, 'Compound query in root' );
-  t.deepEqual( router.match('/sub?foo=bar&second=ok').query, {foo: 'bar', second: 'ok'}, 'Compound query in subroute' );
-  t.deepEqual( router.match('/sub/12/param?foo=bar&second=ok').query, {foo: 'bar', second: 'ok'}, 'Compound query with params' );
-
-  t.deepEqual( router.match('/unknown?foo=bar&second=ok').query, {foo: 'bar', second: 'ok'}, 'Query in not found route' );
-
-  t.end();
-});
-
-test('Params parsing test', t => {
-  t.deepEqual( router.match('/').params, {}, 'No params in root' );
-  t.deepEqual( router.match('/?foo=bar').params, {}, 'No params in root with query' );
-  t.deepEqual( router.match('/#hash').params, {}, 'No params in root with hash' );
-
-  t.deepEqual( router.match('/sub/subparam/10').params, {pn: '10'}, 'Deep params' );
-  t.deepEqual( router.match('/multi/12/route/10').params, {param: '12', param2: '10'}, 'Multiple inner params' );
-  t.deepEqual( router.match('/sub/foobar/param').params, {starting: 'foobar'}, 'Inner param' );
-
-  t.end();
-});
-
-test('Pathname test', t => {
-  t.deepEqual( router.match('/').pathname, '/', 'Pathname in root' );
-  t.deepEqual( router.match('/?foo=bar').pathname, '/', 'Pathname in root with query' );
-  t.deepEqual( router.match('/#hash').pathname, '/', 'Pathname in root with hash' );
-
-  t.deepEqual( router.match('/sub?foo=bar#hash').pathname, '/sub', 'Pathname with query and hash' );
-
-  t.deepEqual( router.match('/sub/subparam/10').pathname, '/sub/subparam/10', 'Pathname with params' );
-  t.deepEqual( router.match('/multi/12/route/10').pathname, '/multi/12/route/10', 'Pathname with multiple params' );
-
-  t.end();
-});
-
-test('Hash test', t => {
-  t.deepEqual( router.match('/').hash, '', 'No hash' );
-  t.deepEqual( router.match('/sub').hash, '', 'No hash in subroute' );
-
-  t.deepEqual( router.match('/#hash').hash, '#hash', 'Hash in route' );
-  t.deepEqual( router.match('/sub#hash').hash, '#hash', 'Hash in subroute' );
-
-  t.deepEqual( router.match('/sub#hash?foo=bar').hash, '#hash?foo=bar', 'Query in hash' );
-
-  t.deepEqual( router.match('/sub?foo=bar#hash').hash, '#hash', 'Hash with queries' );
-
-  t.deepEqual( router.match('/sub/subparam/10#hash').hash, '#hash', 'Hash with params' );
-
-  t.end()
-});
-
-test('Route test', t => {
-  t.deepEqual( router.match('/').route, '/', 'Root route' );
-  t.deepEqual( router.match('/sub').route, '/sub', 'Sub route' );
-  t.deepEqual( router.match('/sub?foo=bar#hash').route, '/sub', 'Sub route with query and hash' );
-  t.deepEqual( router.match('/sub/subparam/hello').route, '/sub/subparam/:pn', 'Sub route with params' );
-  t.deepEqual( router.match('/sub/notfound').route, '/sub/*', 'Sub route notfound' );
-  t.deepEqual( router.match('/multi/12/route/10').route, '/multi/:param/route/:param2', 'Sub route with params' );
-  t.deepEqual( router.match('/notfound').route, '/*', 'Not found' );
-
-  t.end();
-})

@@ -9,7 +9,7 @@ console.log( webpack );
 
 function build( filename, min ){
   var config = {output: {libraryTarget: 'umd'}};
-  var stream = gulp.src( filename + '.js' );
+  var stream = gulp.src( 'builder.js' );
 
   if( min ){
     filename += '.min';
@@ -22,15 +22,7 @@ function build( filename, min ){
   ;
 }
 
-gulp.task( 'test', function(){
-  gulp.src( 'tests/test-routes.js' )
-    .pipe( webpackStream() )
-    .pipe( run() )
-    .pipe( process.stdout )
-  ;
-});
-
-gulp.task( 'default', ['test'], function(){
+gulp.task( 'default', function(){
   build('urlhub');
   return build('urlhub', true);
 });

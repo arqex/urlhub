@@ -4,7 +4,7 @@
   "description": "Another router library, yet the simplest one.",
   "main": "urlhub.js",
   "scripts": {
-    "test": "node_modules/.bin/browserify ./tests/test-routes.js | node_modules/.bin/tape-run",
+    "test": "node_modules/.bin/karma start karma.conf.js",
     "build": "node_modules/.bin/gulp"
   },
   "author": "",
@@ -14,11 +14,20 @@
     "path-to-regexp": "^1.7.0"
   },
   "devDependencies": {
+    "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-preset-env": "^1.5.1",
     "browserify": "^14.1.0",
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
+    "jasmine-core": "^2.5.2",
     "jsdom": "^9.12.0",
     "jsdom-global": "^2.1.1",
+    "karma": "^1.6.0",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-cli": "^1.0.1",
+    "karma-jasmine": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.4",
     "tape": "^4.6.3",
     "webpack-stream": "^3.2.0"
   }

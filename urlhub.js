@@ -54,12 +54,13 @@ var prototype = {
       routes = [routes];
     }
 
-    var parsedRoutes = [];
+    var parsedRoutes = [],
+      me = this
+    ;
+
     routes.forEach( function(r){
       var path = joinUrls(parent, r.path);
 
-
-      console.log('creating', path );
       var params = [],
         parsed = {
           regex: parser( path, params ),
@@ -72,7 +73,7 @@ var prototype = {
 
       if( r.children && r.children.length ){
         parsed.childRegex = parser( path, [], {end: false} );
-        parsed.children = this.parseRoutes( r.children, path );
+        parsed.children = me.parseRoutes( r.children, path );
       }
 
       parsedRoutes.push( parsed );
@@ -81,7 +82,7 @@ var prototype = {
     return parsedRoutes;
   },
 
-  match: function( location, candidates ){
+  match: function( location, candidates, isChild ){
     var i = 0,
       url = sanitizeUrl( location ),
       path, found, match, c
@@ -107,7 +108,7 @@ var prototype = {
         //console.log( 'failed', c.regex, path );
         found = c.childRegex.exec( path );
         if( found ){
-          match = this.match( url, c.children );
+          match = this.match( url, c.children, true );
           if( match ){
             match.matches = [c.cb].concat( match.matches );
             return match; // The recursive call will give all the info
@@ -124,7 +125,9 @@ var prototype = {
     }
 
     if( !found ){
-      console.error('There is no route match for ' + location);
+      if( !isChild ){
+        console.error('There is no route match for ' + location);
+      }
       return false;
     }
 
@@ -165,6 +168,9 @@ var prototype = {
   },
   replace: function( location ){
     this.updateLocation('replace', location);
+  },
+  back: function(){
+    window.history.back();
   },
   updateLocation: function( method, location ){
     var next;
@@ -218,5 +224,16 @@ function sanitizeUrl( url ){
 }
 
 function mergeLocations( prev, next ){
+  var location = Object.assign( prev, next ),
+    search = location.search
+  ;
 
+  if( Object.keys(location.query).length ){
+    search = '?' + qs.stringify( location.query );
+  }
+  else {
+    search = '';
+  }
+
+  return location.pathname + search + location.hash;
 }

@@ -54,8 +54,15 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var parser = __webpack_require__(1);
-	var qs = __webpack_require__(3);
+	module.exports = {urlhub: __webpack_require__(1)};
+
+
+/***/ },
+/* 1 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {var parser = __webpack_require__(2);
+	var qs = __webpack_require__(4);
 
 	/*
 	routes = {
@@ -81,14 +88,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	// The lib
 	var urlhub = {
 	  create: function( routes, options ){
-	    return new Urlhub( routes, options );
+	    return new Yarl( routes, options );
 	  },
 	  joinUrls: joinUrls // just for testing never used, see helpers at bottom
 	}
 
 
 	// The class
-	var Urlhub = function( routes, options ){
+	var Yarl = function( routes, options ){
 	  if( !options || !options.strategy ){
 	    throw new Error('Router needs an strategy to listen to url changes.');
 	  }
@@ -110,12 +117,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      routes = [routes];
 	    }
 
-	    var parsedRoutes = [];
+	    var parsedRoutes = [],
+	      me = this
+	    ;
+
 	    routes.forEach( function(r){
 	      var path = joinUrls(parent, r.path);
 
-
-	      console.log('creating', path );
 	      var params = [],
 	        parsed = {
 	          regex: parser( path, params ),
@@ -128,7 +136,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if( r.children && r.children.length ){
 	        parsed.childRegex = parser( path, [], {end: false} );
-	        parsed.children = this.parseRoutes( r.children, path );
+	        parsed.children = me.parseRoutes( r.children, path );
 	      }
 
 	      parsedRoutes.push( parsed );
@@ -137,7 +145,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return parsedRoutes;
 	  },
 
-	  match: function( location, candidates ){
+	  match: function( location, candidates, isChild ){
 	    var i = 0,
 	      url = sanitizeUrl( location ),
 	      path, found, match, c
@@ -163,7 +171,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        //console.log( 'failed', c.regex, path );
 	        found = c.childRegex.exec( path );
 	        if( found ){
-	          match = this.match( url, c.children );
+	          match = this.match( url, c.children, true );
 	          if( match ){
 	            match.matches = [c.cb].concat( match.matches );
 	            return match; // The recursive call will give all the info
@@ -180,6 +188,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    if( !found ){
+	      if( !isChild ){
+	        console.error('There is no route match for ' + location);
+	      }
 	      return false;
 	    }
 
@@ -204,11 +215,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var me = this;
 	    this.strategy.onChange( function( location ){
 	      var match = me.match( location );
+	      me.location = match;
 	      me.cbs.forEach( function( cb ){
 	        cb( match );
 	      });
 	    });
 	    this.strategy.start();
+	    return this.match( this.strategy.getLocation() );
 	  },
 	  onChange: function( cb ){
 	    this.cbs.push( cb );
@@ -218,6 +231,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  replace: function( location ){
 	    this.updateLocation('replace', location);
+	  },
+	  back: function(){
+	    window.history.back();
 	  },
 	  updateLocation: function( method, location ){
 	    var next;
@@ -233,7 +249,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}
 
-	for( var method in prototype ) Urlhub.prototype[ method ] = prototype[method];
+	for( var method in prototype ) Yarl.prototype[ method ] = prototype[method];
 
 	module.exports = urlhub;
 
@@ -271,16 +287,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 	function mergeLocations( prev, next ){
+	  var location = Object.assign( prev, next ),
+	    search = location.search
+	  ;
 
+	  if( Object.keys(location.query).length ){
+	    search = '?' + qs.stringify( location.query );
+	  }
+	  else {
+	    search = '';
+	  }
+
+	  return location.pathname + search + location.hash;
 	}
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 1 */
+/* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var isarray = __webpack_require__(2)
+	var isarray = __webpack_require__(3)
 
 	/**
 	 * Expose `pathToRegexp`.
@@ -709,7 +736,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 2 */
+/* 3 */
 /***/ function(module, exports) {
 
 	module.exports = Array.isArray || function (arr) {
@@ -718,14 +745,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict'
 
 	var parseReg = /([^=?&]+)=?([^&]*)/g
-	var qFlat = __webpack_require__(4)
-	var qSet = __webpack_require__(5)
+	var qFlat = __webpack_require__(5)
+	var qSet = __webpack_require__(6)
 
 	/**
 	 * Converts an object to a query string and optionally flattens it.
@@ -765,7 +792,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 4 */
+/* 5 */
 /***/ function(module, exports) {
 
 	var toString       = Object.prototype.toString;
@@ -816,7 +843,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 5 */
+/* 6 */
 /***/ function(module, exports) {
 
 	"use strict";
