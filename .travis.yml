@@ -5,3 +5,4 @@ node_js:
 script: npm run travis
 install:
   - npm install
+  - npm run build

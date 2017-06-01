@@ -1,11 +1,8 @@
 var gulp = require('gulp'),
   webpackStream = require('webpack-stream'),
   webpack = require('webpack'),
-  rename = require('gulp-rename'),
-  run = require('tape-run')
+  rename = require('gulp-rename')
 ;
-
-console.log( webpack );
 
 function build( filename, min ){
   var config = {output: {libraryTarget: 'umd'}};

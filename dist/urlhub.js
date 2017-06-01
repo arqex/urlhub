@@ -52,14 +52,14 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	module.exports = {urlhub: __webpack_require__(1)};
 
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {var parser = __webpack_require__(2);
 	var qs = __webpack_require__(4);
@@ -88,14 +88,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	// The lib
 	var urlhub = {
 	  create: function( routes, options ){
-	    return new Yarl( routes, options );
+	    return new Urlhub( routes, options );
 	  },
 	  joinUrls: joinUrls // just for testing never used, see helpers at bottom
 	}
 
 
 	// The class
-	var Yarl = function( routes, options ){
+	var Urlhub = function( routes, options ){
 	  if( !options || !options.strategy ){
 	    throw new Error('Router needs an strategy to listen to url changes.');
 	  }
@@ -249,7 +249,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	}
 
-	for( var method in prototype ) Yarl.prototype[ method ] = prototype[method];
+	for( var method in prototype ) Urlhub.prototype[ method ] = prototype[method];
 
 	module.exports = urlhub;
 
@@ -303,9 +303,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	var isarray = __webpack_require__(3)
 
@@ -735,18 +735,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = Array.isArray || function (arr) {
 	  return Object.prototype.toString.call(arr) == '[object Array]';
 	};
 
 
-/***/ },
+/***/ }),
 /* 4 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict'
 
@@ -791,9 +791,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	}
 
 
-/***/ },
+/***/ }),
 /* 5 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	var toString       = Object.prototype.toString;
 	var hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -842,9 +842,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = qFlat;
 
 
-/***/ },
+/***/ }),
 /* 6 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	"use strict";
 
@@ -948,7 +948,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = qSet;
 
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
