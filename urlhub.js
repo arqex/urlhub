@@ -37,8 +37,18 @@ var Urlhub = function( routes, options ){
     throw new Error('Router needs an strategy to listen to url changes.');
   }
 
+  var s = options.strategy;
+
   this.routes = this.parseRoutes( routes );
-  this.strategy = options.strategy;
+
+  var ops = {};
+  Object.keys( options ).forEach( function( key ){
+    if( key === 'strategy' ) return;
+    ops[key] = options[key];
+  });
+
+  s.init && s.init( ops );
+  this.strategy = s;
 
   // Callbacks to be called on route change
   this.cbs = [];
@@ -159,6 +169,9 @@ var prototype = {
     });
     this.strategy.start();
     return this.match( this.strategy.getLocation() );
+  },
+  stop: function(){
+    this.strategy( false );
   },
   onChange: function( cb ){
     this.cbs.push( cb );

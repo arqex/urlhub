@@ -3,7 +3,7 @@ UrlHub: Yet another router library, but the simplest one
 [![Build Status](https://secure.travis-ci.org/arqex/freezer.svg)](https://travis-ci.org/arqex/urlhub)
 [![npm version](https://badge.fury.io/js/urlhub.svg)](http://badge.fury.io/js/urlhub)
 
-Is another new routing library needed? Probably not, UrlHub is a router that make the work like any other javascript routing library. The difference is that *UrlHub is SIMPLE*, it's made to be understood completely just by reading this file.
+Is another new routing library needed? Probably not, UrlHub is a router that make the work like any other javascript routing library. The difference is that **UrlHub is SIMPLE**, it's made to be understood completely just by reading this file.
 
 ## Installation
 
@@ -13,7 +13,7 @@ npm install urlhub
 
 ## Usage
 
-Think of UrlHub as *a library to translate URLs into something else* (that's a nice definition for a router). Let's create a test router.
+Think of UrlHub as **a library to translate URLs into something else** (that's a nice definition for a router). Let's create a test router.
 
 ```js
 var urlhub = require('urlhub');
