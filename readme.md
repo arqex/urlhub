@@ -11,7 +11,7 @@ Is another new routing library needed? Probably not, UrlHub is a router that mak
 npm install urlhub
 ```
 
-## Usage
+## Translating URLs to other things
 
 Think of UrlHub as **a library to translate URLs into something else** (that's a nice definition for a router). Let's create a test router.
 
@@ -20,8 +20,8 @@ var urlhub = require('urlhub');
 var pushStrategy = require('urlhub/pushStrategy');
 
 var routes = [
-  {path: '/home', cb: 'Home'},
-  {path: '/users', cb: 'Users', children: [
+  {path: '/home', cb: 'Sweet Home'},
+  {path: '/users', cb: 'Users screen', children: [
     {path: '/:userId', cb: 'SingleUser'}
   ]}
 ];
@@ -35,37 +35,33 @@ The router has been defined with 3 routes:
 - `/users`
 - `/users/:userId` (Child of `/users`)
 
-The `cb` (named after callback) attribute is what the router returns when a url matches one of the defined routes:
+The `cb` (named after callback) attribute is what the router returns when a url matches one of the defined routes. With the example above we are translate URLs into `String`s.
 
 ```js
-var location = router.match('/home');
-/* location value will be
-{
-  hash: "",
-  matches: ["Home"],
-  params: {},
-  pathname: "/home",
-  query: {},
-  route: "/home",
-  search: ""
-}
-*/
-```
-The `matches` attribute is the translation of the URL. Since we defined the `"/home"` route with the string `"Home"` as its `cb`, we get that same string back when there is a match on that route.
+var location;
 
-What about the nested route?
+location = router.match('/home');
+// location.matches will be ["Sweet Home"]
 
-```js
 location = router.match('/users/937264923');
+// location matches will be ["Users screen", "SingleUser"]
+```
+
+The `matches` attribute is the translation of the URL. Since we defined the `"/home"` route with the string `"Sweet home"` as its `cb`, we get that same string back when there is a match on that route. Nested routes will match all the parent routes, that's
+why the `matches` attribute is an `array`.
+
+`router.match` returns much more useful information from the url:
+```js
+location = router.match('/users/937264923?foo=bar#my_hash');
 /* location value will be:
 {
-  hash: "",
-  matches: ["Users", "SingleUser"],
+  hash: "#my_hash",
+  matches: ["Users screen", "SingleUser"],
   params: {userId: "937264923"},
   pathname: "/users/937264923",
-  query: {},
+  query: {foo: 'bar'},
   route: "/users/:userId",
-  search: ""
+  search: "?foo=bar"
 }
 */
 ```
