@@ -1,3 +1,6 @@
+## v0.1.1
+* Fixes problems with the basePath
+
 ## v0.1.0
 * Refactored relationship between urlhub and strategy
 * Adds basePath option to the pushStrategy

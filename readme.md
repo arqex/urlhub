@@ -35,11 +35,9 @@ The router has been defined with 3 routes:
 - `/users`
 - `/users/:userId` (Child of `/users`)
 
-The `cb` (named after callback) attribute is what the router returns when a url matches one of the defined routes. With the example above we are translate URLs into `String`s.
+The `cb` (named after callback) attribute is what the router returns when a url matches one of the defined routes. With the example above we are translate URLs into `strings`.
 
 ```js
-var location;
-
 location = router.match('/home');
 // location.matches will be ["Sweet Home"]
 
@@ -65,19 +63,25 @@ location = router.match('/users/937264923?foo=bar#my_hash');
 }
 */
 ```
-In this case, the URL is matched by a nested route and the `matches` attribute contains the `cb`s of all the parent routes too. That's why the `matches` attributes is an array.
 
-As you can see, UrlHub does nothing else than translating the URL. If we give it a string as `cb` it will be returned on a URL match, but you'd probably want to pass a function as `cb` to be executed after the match, or a React component in order to display it after routing.
+As you can see, UrlHub does nothing else than parsing and translating URLs. If we give it a string as `cb` it will be returned on a URL match, but you'd probably want to pass a function as `cb` to be executed after the match, or a React component in order to display it after routing.
 
 ## Detecting URL changes
-The second nice feature that any router must have is detecting changes in browser's location to react properly to them. That's why we need a routing strategy, the mechanism to define what is a URL change, and how to navigate without a page refresh. The only one shipped with UrlHub is the [HTML5's pushState strategy](https://developer.mozilla.org/en-US/docs/Web/API/History_API). If you need a hash strategy you need to build it yourself (pull requests are welcome).
+The second nice feature that any router must have is detecting changes in browser's location to react properly to them. That's why we need a **routing strategy**: the mechanism to define what is a URL change, and how to navigate without a page refresh.
+
+There is one routing strategy that is shipped with UrlHub, the [HTML5's pushState strategy](https://developer.mozilla.org/en-US/docs/Web/API/History_API). If you need a hash strategy you need to build it yourself (pull requests are welcome).
 
 We create our router like this:
 ```js
+var urlhub = require('urlhub');
+var pushStrategy = require('urlhub/pushStrategy');
+
 var router = urlhub.create( routes, {strategy: pushStrategy} );
+
 router.onChange(function( location ){
   // The location object is the same returned by the `match` method.
   // This will be triggered by any change in the browser's URL.
+  // We can load our content here depending on the route match.
 });
 
 // Start listening to URL changes
@@ -94,3 +98,16 @@ router.push('/users');
 // Replace current location in history by `/users/874922`
 router.replace('/users/874922')
 ```
+
+## What else?
+That's basically all the functionality. This is still a work in progress, still need:
+* Document the API and options
+* Add logic to ignore an index.html file in URLs
+* `push` and `replace` should accept location objects
+* A hash navigation strategy
+* There is a `Link` React component shipped. Document it.
+* Write an article to make clear all the advantages.
+
+
+## License
+[MIT licensed](LICENSE)
