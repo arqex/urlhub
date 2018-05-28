@@ -968,7 +968,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 7 */
 /***/ (function(module, exports) {
 
-	var onChange;
+	var onChange = function () {};
 	var pushStrategy = {
 	  init: function( options ){
 	    this.basePath = options.basePath || '';

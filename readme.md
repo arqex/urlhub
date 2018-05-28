@@ -69,14 +69,14 @@ As you can see, UrlHub does nothing else than parsing and translating URLs. If w
 ## Detecting URL changes
 The second nice feature that any router must have is detecting changes in browser's location to react properly to them. That's why we need a **routing strategy**: the mechanism to define what is a URL change, and how to navigate without a page refresh.
 
-There is one routing strategy that is shipped with UrlHub, the [HTML5's pushState strategy](https://developer.mozilla.org/en-US/docs/Web/API/History_API). If you need a hash strategy you need to build it yourself (pull requests are welcome).
+There are 2 routing strategies shipped with UrlHub, the [HTML5's pushState strategy](https://developer.mozilla.org/en-US/docs/Web/API/History_API), and the Hash strategy, that updates the URL's hash to navigate. Both strategies are used in the same way by urlhub:
 
 We create our router like this:
 ```js
 var urlhub = require('urlhub');
-var pushStrategy = require('urlhub/pushStrategy');
+var hashStrategy = require('urlhub/hashStrategy');
 
-var router = urlhub.create( routes, {strategy: pushStrategy} );
+var router = urlhub.create( routes, {strategy: hashStrategy} );
 
 router.onChange(function( location ){
   // The location object is the same returned by the `match` method.

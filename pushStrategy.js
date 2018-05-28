@@ -1,4 +1,4 @@
-var onChange;
+var onChange = function () {};
 var pushStrategy = {
   init: function( options ){
     this.basePath = options.basePath || '';

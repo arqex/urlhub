@@ -1,3 +1,6 @@
+## v0.1.2
+* Adds hash strategy
+
 ## v0.1.1
 * Fixes problems with the basePath
 
