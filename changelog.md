@@ -1,3 +1,6 @@
+## v0.1.3
+* No changes, only fixes npm issues
+
 ## v0.1.2
 * Adds hash strategy
 
