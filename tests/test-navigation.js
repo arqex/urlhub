@@ -1,15 +1,15 @@
 // routes are defined globally at ./routeData.js
 
-function createRouter(){
-  var r = urlhub.create( routes, {strategy: pushStrategy} );
+function createRouter( options ){
+  var r = urlhub.create( options || {strategy: pushStrategy} );
+  r.setRoutes(routes);
   r.start();
   return r;
 }
-var router = urlhub.create( routes, {strategy: pushStrategy} );
-
 
 describe( 'Basic navigation', function(){
   it('pushing urls', function(){
+    var router = createRouter();
     router.push('/sub');
     expect( location.pathname ).toBe('/sub');
 
@@ -18,6 +18,7 @@ describe( 'Basic navigation', function(){
 
     router.push('/');
     expect( location.pathname ).toBe('/');
+    router.stop()
   });
 });
 
@@ -37,6 +38,7 @@ describe( 'Listening to changes', function(){
         route: '/multi/:param/route/:param2',
         search: ''
       });
+      router.stop();
       done();
     });
 
@@ -58,6 +60,7 @@ describe( 'Listening to changes', function(){
         search: ''
       });
 
+      router.stop();
       done();
     });
 
@@ -66,11 +69,10 @@ describe( 'Listening to changes', function(){
 
   it('basePath test', function( done ){
     var basePath = '/sub/subparam',
-      router = urlhub.create( routes, {strategy: pushStrategy, basePath: basePath} ),
-      location = router.start()
+      router = createRouter({strategy: pushStrategy, basePath: basePath})
     ;
 
-    expect( location ).toEqual( {
+    expect( router.location ).toEqual( {
       hash: '',
       matches: ['second'],
       params: {},
@@ -96,6 +98,7 @@ describe( 'Listening to changes', function(){
 
       expect( window.location.pathname ).toBe( basePath + path );
 
+      router.stop();
       done();
     });
 

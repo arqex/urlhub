@@ -7,14 +7,15 @@ module.exports = function (config) {
           '../dist/urlhub.js',
           'routeData.js',
           'test-routes.js',
-          'test-navigation.js'
+          'test-navigation.js',
+          'test-navigation-hash.js'
         ],
 
         plugins: [
             require('karma-jasmine'),
             require('karma-phantomjs-launcher')
         ],
-        
+
         port: 9876,
         browsers: ['PhantomJS'],
         singleRun: false,

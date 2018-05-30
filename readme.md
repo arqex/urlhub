@@ -26,7 +26,8 @@ var routes = [
   ]}
 ];
 
-var router = urlhub.create( routes, {strategy: pushStrategy} );
+var router = urlhub.create( {strategy: pushStrategy} );
+router.setRoutes( routes );
 router.start();
 ```
 
@@ -76,9 +77,9 @@ We create our router like this:
 var urlhub = require('urlhub');
 var hashStrategy = require('urlhub/hashStrategy');
 
-var router = urlhub.create( routes, {strategy: hashStrategy} );
-
-router.onChange(function( location ){
+var router = urlhub.create( {strategy: hashStrategy} );
+router.setRoutes( routes );
+router.onChange( function( location ){
   // The location object is the same returned by the `match` method.
   // This will be triggered by any change in the browser's URL.
   // We can load our content here depending on the route match.
@@ -97,14 +98,29 @@ router.push('/users');
 
 // Replace current location in history by `/users/874922`
 router.replace('/users/874922')
+
+// It's possible to use partial location objects to update the route
+router.push({query: {foo: 'anotherBar'}})
+```
+
+## Intercepting route changes
+A nice feature in urlhub is the ability of preventing route changes by using the `onBeforeChange` hook. Imagine that our app has some route '/restricted' that can only be accessed for users that are logged in, we can add this restriction easily:
+```js
+// The hook function receives the next route as a location object
+router.onBeforeChange( function(location){
+  if( location.pathname === '/restricted' && !userIsLoggedIn() ){
+    // In this case we go to the login screen
+    return '/login';
+  }
+
+  // In any other case, don't intercept the route, re
+  return location;
+})
 ```
 
 ## What else?
 That's basically all the functionality. This is still a work in progress, still need:
 * Document the API and options
-* Add logic to ignore an index.html file in URLs
-* `push` and `replace` should accept location objects
-* A hash navigation strategy
 * There is a `Link` React component shipped. Document it.
 * Write an article to make clear all the advantages.
 

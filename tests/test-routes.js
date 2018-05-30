@@ -1,5 +1,6 @@
 // routes are defined globally at ./routeData.js
-var router = urlhub.create( routes, {strategy: {}} );
+var router = urlhub.create( {strategy: {}} );
+router.setRoutes(routes);
 
 describe( 'Route match test', function(){
   it('join routes test', function() {

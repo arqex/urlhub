@@ -1,10 +1,6 @@
 var onChange = function () {};
 var hashStrategy = {
 	init: function (options) {
-		this.basePath = options.basePath || '';
-		if (this.basePath.slice(-1) === '/') {
-			this.basePath = this.basePath.slice(0, -1);
-		}
 	},
 
 	start: function () {
@@ -22,16 +18,14 @@ var hashStrategy = {
 		// Emit first onChange
 		me.emit();
 	},
-	push: function (location) {
-		window.location.hash = '#' + location;
+	push: function (route) {
+		window.location.hash = '#' + route;
 		this.emit();
 	},
-	replace: function (location) {
-		var loc = location,
-			url = loc.protocol + '//' + loc.host + loc.pathname + '#' + location
-		;
+	replace: function (route) {
+		var url = location.protocol + '//' + location.host + location.pathname + '#' + route;
 
-		loc.replace(url);
+		location.replace(url);
 		this.emit();
 	},
 	onChange: function (cb) {

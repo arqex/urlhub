@@ -1,3 +1,9 @@
+## v0.2.0
+* Adds the `onBeforeChange` hook
+* Fixes to the hash strategy
+* Adds tests for the hash strategy
+* Adds `hashStrategy` to the UMD file
+
 ## v0.1.3
 * No changes, only fixes npm issues
 

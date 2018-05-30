@@ -24,22 +24,20 @@ else {
 
 // The lib
 var urlhub = {
-  create: function( routes, options ){
-    return new Urlhub( routes, options );
+  create: function( options ){
+    return new Urlhub( options );
   },
   joinUrls: joinUrls // just for testing never used, see helpers at bottom
 }
 
 
 // The class
-var Urlhub = function( routes, options ){
+var Urlhub = function( options ){
   if( !options || !options.strategy ){
     throw new Error('Router needs an strategy to listen to url changes.');
   }
 
   var s = options.strategy;
-
-  this.routes = this.parseRoutes( routes );
 
   var ops = {};
   Object.keys( options ).forEach( function( key ){
@@ -50,12 +48,17 @@ var Urlhub = function( routes, options ){
   s.init && s.init( ops );
   this.strategy = s;
 
+  // Callbacks before the route change
+  this.obc = [];
+
   // Callbacks to be called on route change
   this.cbs = [];
 }
 
 var prototype = {
-
+  setRoutes: function( routes ){
+    this.routes = this.parseRoutes( routes );
+  },
   // Route translation methods
   parseRoutes: function( routes, parent ){
     if( !routes ) console.warn( 'No routes provided to parseRoutes' );
@@ -161,17 +164,43 @@ var prototype = {
   start: function(){
     var me = this;
     this.strategy.onChange( function( location ){
-      var match = me.match( location );
-      me.location = match;
-      me.cbs.forEach( function( cb ){
-        cb( match );
-      });
+      var match = me.runOnBeforeChange( me.match( location ) );
+      if( !match ) return;
+
+      var nextLocation = match.pathname + match.search + match.hash;
+      if( location !== nextLocation ){
+        me.strategy.replace( nextLocation );
+      }
+      else {
+        me.location = match;
+        me.cbs.forEach( function( cb ){
+          cb( match );
+        });
+      }
     });
+
     this.strategy.start();
     return this.match( this.strategy.getLocation() );
   },
   stop: function(){
-    this.strategy( false );
+    this.strategy.onChange( function(){} );
+  },
+  runOnBeforeChange: function( match ){
+    var me = this;
+
+    this.obc.forEach( function(cb){
+      if( match ){
+        match = cb( match );
+        if( typeof match === 'string' ){
+          match = me.match( match );
+        }
+      }
+    });
+
+    return match;
+  },
+  onBeforeChange: function( cb ){
+    this.obc.push( cb );
   },
   onChange: function( cb ){
     this.cbs.push( cb );
@@ -186,16 +215,23 @@ var prototype = {
     window.history.back();
   },
   updateLocation: function( method, location ){
+    var current = this.strategy.getLocation();
     var next;
 
     if(typeof location === 'string'){
       next = location;
     }
     else {
-      next = mergeLocations( this.match( this.strategy.getLocation()), location );
+      next = mergeLocations( this.match( current ), location );
     }
 
-    this.strategy[ method ]( next );
+    var nextLocation = this.runOnBeforeChange( this.match(next) );
+    if( nextLocation ){
+      next = nextLocation.pathname + nextLocation.search + nextLocation.hash;
+      if( current !== next ){
+        this.strategy[ method ]( next );
+      }
+    }
   }
 }
 

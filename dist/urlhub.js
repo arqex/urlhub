@@ -56,7 +56,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	module.exports = {
 	  urlhub: __webpack_require__(1),
-	  pushStrategy: __webpack_require__(7)
+	  pushStrategy: __webpack_require__(7),
+	  hashStrategy: __webpack_require__(8)
 	};
 
 
@@ -90,22 +91,20 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// The lib
 	var urlhub = {
-	  create: function( routes, options ){
-	    return new Urlhub( routes, options );
+	  create: function( options ){
+	    return new Urlhub( options );
 	  },
 	  joinUrls: joinUrls // just for testing never used, see helpers at bottom
 	}
 
 
 	// The class
-	var Urlhub = function( routes, options ){
+	var Urlhub = function( options ){
 	  if( !options || !options.strategy ){
 	    throw new Error('Router needs an strategy to listen to url changes.');
 	  }
 
 	  var s = options.strategy;
-
-	  this.routes = this.parseRoutes( routes );
 
 	  var ops = {};
 	  Object.keys( options ).forEach( function( key ){
@@ -116,12 +115,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  s.init && s.init( ops );
 	  this.strategy = s;
 
+	  // Callbacks before the route change
+	  this.obc = [];
+
 	  // Callbacks to be called on route change
 	  this.cbs = [];
 	}
 
 	var prototype = {
-
+	  setRoutes: function( routes ){
+	    this.routes = this.parseRoutes( routes );
+	  },
 	  // Route translation methods
 	  parseRoutes: function( routes, parent ){
 	    if( !routes ) console.warn( 'No routes provided to parseRoutes' );
@@ -227,17 +231,43 @@ return /******/ (function(modules) { // webpackBootstrap
 	  start: function(){
 	    var me = this;
 	    this.strategy.onChange( function( location ){
-	      var match = me.match( location );
-	      me.location = match;
-	      me.cbs.forEach( function( cb ){
-	        cb( match );
-	      });
+	      var match = me.runOnBeforeChange( me.match( location ) );
+	      if( !match ) return;
+
+	      var nextLocation = match.pathname + match.search + match.hash;
+	      if( location !== nextLocation ){
+	        me.strategy.replace( nextLocation );
+	      }
+	      else {
+	        me.location = match;
+	        me.cbs.forEach( function( cb ){
+	          cb( match );
+	        });
+	      }
 	    });
+
 	    this.strategy.start();
 	    return this.match( this.strategy.getLocation() );
 	  },
 	  stop: function(){
-	    this.strategy( false );
+	    this.strategy.onChange( function(){} );
+	  },
+	  runOnBeforeChange: function( match ){
+	    var me = this;
+
+	    this.obc.forEach( function(cb){
+	      if( match ){
+	        match = cb( match );
+	        if( typeof match === 'string' ){
+	          match = me.match( match );
+	        }
+	      }
+	    });
+
+	    return match;
+	  },
+	  onBeforeChange: function( cb ){
+	    this.obc.push( cb );
 	  },
 	  onChange: function( cb ){
 	    this.cbs.push( cb );
@@ -252,16 +282,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	    window.history.back();
 	  },
 	  updateLocation: function( method, location ){
+	    var current = this.strategy.getLocation();
 	    var next;
 
 	    if(typeof location === 'string'){
 	      next = location;
 	    }
 	    else {
-	      next = mergeLocations( this.match( this.strategy.getLocation()), location );
+	      next = mergeLocations( this.match( current ), location );
 	    }
 
-	    this.strategy[ method ]( next );
+	    var nextLocation = this.runOnBeforeChange( this.match(next) );
+	    if( nextLocation ){
+	      next = nextLocation.pathname + nextLocation.search + nextLocation.hash;
+	      if( current !== next ){
+	        this.strategy[ method ]( next );
+	      }
+	    }
 	  }
 	}
 
@@ -1016,6 +1053,60 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	module.exports = pushStrategy;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+	var onChange = function () {};
+	var hashStrategy = {
+		init: function (options) {
+		},
+
+		start: function () {
+			var me = this;
+
+			if (!location.hash) {
+				location.hash = '#/';
+			}
+
+			// Register event listener
+			window.onhashchange = function () {
+				me.emit();
+			};
+
+			// Emit first onChange
+			me.emit();
+		},
+		push: function (route) {
+			window.location.hash = '#' + route;
+			this.emit();
+		},
+		replace: function (route) {
+			var url = location.protocol + '//' + location.host + location.pathname + '#' + route;
+
+			location.replace(url);
+			this.emit();
+		},
+		onChange: function (cb) {
+			onChange = cb;
+		},
+		getLocation: function () {
+			if( !location.hash ){
+				return '/';
+			}
+			else if (location.hash[1] !== '/') {
+				return '/' + location.hash;
+			}
+			return location.hash.slice(1);
+		},
+		emit: function () {
+			onChange(this.getLocation());
+		}
+	};
+
+	module.exports = hashStrategy;
 
 
 /***/ })
