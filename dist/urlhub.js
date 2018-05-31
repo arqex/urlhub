@@ -176,15 +176,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    path =  parsed.pathname;
 
 	    while( i < candidates.length && !found ){
-
 	      c = candidates[i];
-	      found = c.regex.exec( path );
-	      if( found ){
-	        found = {
-	          id: c.id, cb: c.cb, params: found.slice(1)
-	        };
-	      }
-	      else if( c.childRegex ){
+	      if( c.childRegex ){
 	        //console.log( 'failed', c.regex, path );
 	        found = c.childRegex.exec( path );
 	        if( found ){
@@ -197,6 +190,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	            found = false;
 	          }
 	        }
+	      }
+	      
+	      found = c.regex.exec( path );
+	      if( found ){
+	        found = {
+	          id: c.id, cb: c.cb, params: found.slice(1)
+	        };
 	      }
 
 	      if( !found ){
@@ -230,18 +230,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // Routing methods
 	  start: function(){
 	    var me = this;
-	    this.strategy.onChange( function( location ){
-	      var match = me.runOnBeforeChange( me.match( location ) );
-	      if( !match ) return;
+	    this.strategy.onChange( function(){
+	      var change = me.checkChange();
+	      if( !change.next ) return;
 
-	      var nextLocation = match.pathname + match.search + match.hash;
-	      if( location !== nextLocation ){
-	        me.strategy.replace( nextLocation );
+	      if( change.current !== change.next ){
+	        me.strategy.replace( change.next );
 	      }
 	      else {
-	        me.location = match;
+	        me.location = change.nextLocation;
 	        me.cbs.forEach( function( cb ){
-	          cb( match );
+	          cb( change.nextLocation );
 	        });
 	      }
 	    });
@@ -251,6 +250,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  stop: function(){
 	    this.strategy.onChange( function(){} );
+	  },
+	  refresh: function(){
+	    var change = this.checkChange();
+	    change.next && change.current !== change.next && this.strategy.replace( change.next );
+	  },
+	  checkChange: function(){
+	    var current = this.strategy.getLocation(),
+	      nextLocation = this.runOnBeforeChange( this.match(current) ),
+	      next = nextLocation && (nextLocation.pathname + nextLocation.search + nextLocation.hash)
+	    ;
+
+	    return {current:current, next:next, nextLocation:nextLocation};
 	  },
 	  runOnBeforeChange: function( match ){
 	    var me = this;

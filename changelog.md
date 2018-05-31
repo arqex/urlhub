@@ -1,3 +1,7 @@
+## v0.3.0
+* Adds the `refresh` method
+* Updates matching order to give preference to child root routes
+
 ## v0.2.0
 * Adds the `onBeforeChange` hook
 * Fixes to the hash strategy

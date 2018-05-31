@@ -1,6 +1,6 @@
 {
   "name": "urlhub",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Another router library, yet the simplest one.",
   "main": "urlhub.js",
   "scripts": {
@@ -8,11 +8,18 @@
     "travis": "node_modules/.bin/karma start karma.conf.js --single-run",
     "build": "node_modules/.bin/gulp"
   },
-  "author": "",
+  "author": {
+    "name": "Javier Marquez",
+    "url": "http://arqex.com"
+  },
   "license": "MIT",
   "dependencies": {
     "mini-querystring": "^1.0.2",
     "path-to-regexp": "^1.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arqex/urlhub"
   },
   "devDependencies": {
     "babel-core": "^6.24.1",

@@ -23,11 +23,10 @@ describe( 'Route match test', function(){
     expect( urlhub.joinUrls('/test/', '/path/') ).toBe( '/test/path' );
   })
 
-
   it('route match test', function() {
     expect( router.match('/').matches, 'Root route match' ).toEqual(['root']);
-    expect( router.match('/sub').matches, 'Subroute match' ).toEqual(['root', 'sub']);
-    expect( router.match('sub').matches, 'Relatative match' ).toEqual(['root', 'sub']);
+    expect( router.match('/sub').matches, 'Subroute match' ).toEqual(['root', 'sub', 'rootChild']);
+    expect( router.match('sub').matches, 'Relatative match' ).toEqual(['root', 'sub', 'rootChild']);
 
     expect( router.match('/sub/subsub').matches, 'Subsubroute match' ).toEqual(['root', 'sub', 'subsub']);
     expect( router.match('/sub/subparam/param').matches, 'Subparam match' ).toEqual(['root', 'sub', 'subparam']);

@@ -1,6 +1,7 @@
 window.routes = [
   { path: '/', cb: 'root', children: [
     { path: 'sub', cb: 'sub', children: [
+      { path: '/', cb: 'rootChild'},
       { path: 'subsub', cb: 'subsub' },
       { path: 'subparam/:pn', cb: 'subparam'},
       { path: ':starting/param', cb: 'substarting'},
