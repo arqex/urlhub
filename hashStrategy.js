@@ -20,13 +20,11 @@ var hashStrategy = {
 	},
 	push: function (route) {
 		window.location.hash = '#' + route;
-		this.emit();
 	},
 	replace: function (route) {
 		var url = location.protocol + '//' + location.host + location.pathname + '#' + route;
 
 		location.replace(url);
-		this.emit();
 	},
 	onChange: function (cb) {
 		onChange = cb;

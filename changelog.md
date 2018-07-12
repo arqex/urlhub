@@ -1,3 +1,6 @@
+## v0.4.1
+* Removes triggering changes after push or replace in hash strategy
+
 ## v0.4.0
 * Normalize pathnames to make it work with IE
 
