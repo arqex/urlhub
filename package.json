@@ -1,6 +1,6 @@
 {
   "name": "urlhub",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Another router library, yet the simplest one.",
   "main": "urlhub.js",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "mini-querystring": "^1.0.2",
+    "mini-querystring": "^2.0.6",
     "path-to-regexp": "^1.7.0"
   },
   "repository": {

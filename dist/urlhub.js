@@ -175,6 +175,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var parsed = parseUrl( url );
 	    path =  parsed.pathname;
 
+	    // Normalize pathname
+	    if( path[0] !== '/' ){
+	      path = '/' + path;
+	    }
+
 	    while( i < candidates.length && !found ){
 	      c = candidates[i];
 	      if( c.childRegex ){
@@ -191,7 +196,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          }
 	        }
 	      }
-	      
+
 	      found = c.regex.exec( path );
 	      if( found ){
 	        found = {
@@ -224,6 +229,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    c.params.forEach( function( p, i ){
 	      match.params[ p ] = found.params[i];
 	    });
+
 	    return match;
 	  },
 

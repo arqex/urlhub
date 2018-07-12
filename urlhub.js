@@ -108,6 +108,11 @@ var prototype = {
     var parsed = parseUrl( url );
     path =  parsed.pathname;
 
+    // Normalize pathname
+    if( path[0] !== '/' ){
+      path = '/' + path;
+    }
+
     while( i < candidates.length && !found ){
       c = candidates[i];
       if( c.childRegex ){
@@ -124,7 +129,7 @@ var prototype = {
           }
         }
       }
-      
+
       found = c.regex.exec( path );
       if( found ){
         found = {
@@ -157,6 +162,7 @@ var prototype = {
     c.params.forEach( function( p, i ){
       match.params[ p ] = found.params[i];
     });
+
     return match;
   },
 

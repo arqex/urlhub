@@ -1,3 +1,6 @@
+## v0.4.0
+* Normalize pathnames to make it work with IE
+
 ## v0.3.0
 * Adds the `refresh` method
 * Updates matching order to give preference to child root routes
