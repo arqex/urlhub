@@ -1,3 +1,6 @@
+## v0.5.0
+* `match()` now returns an empty a location object with an empty `matches` array if the route is not found.
+
 ## v0.4.1
 * Removes triggering changes after push or replace in hash strategy
 

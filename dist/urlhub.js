@@ -187,7 +187,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        found = c.childRegex.exec( path );
 	        if( found ){
 	          match = this.match( url, c.children, true );
-	          if( match ){
+	          if( match.matches.length ){
 	            match.matches = [c.cb].concat( match.matches );
 	            return match; // The recursive call will give all the info
 	          }
@@ -209,20 +209,22 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 	    }
 
-	    if( !found ){
-	      if( !isChild ){
-	        console.error('There is no route match for ' + location);
-	      }
-	      return false;
+	    var matches = [];
+
+	    if( found ){
+	      matches.push( found.cb)
+	    }
+	    else if( !isChild ){
+	      console.error('There is no route match for ' + location);
 	    }
 
 	    match = {
-	      matches: [found.cb],
+	      matches: matches,
 	      pathname: path,
 	      search: parsed.search,
 	      query: qs.parse( parsed.search ),
 	      hash: parsed.hash,
-	      route: found.id,
+	      route: found && found.id || false,
 	      params: {}
 	    };
 

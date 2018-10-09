@@ -153,4 +153,17 @@ describe( 'Route match test', function(){
     expect( router.match('/notfound').route, 'Not found' )
 			.toEqual( '/*' );
   })
+
+  it('Unexistant route returns location with empty matches', function() {
+    var router = urlhub.create( {strategy: {}} );
+    router.setRoutes([]);
+
+    var loc = router.match('/unexistant?foo=bar')
+    console.log( loc )
+    
+    expect( loc.route, 'Route' ).toEqual( false )
+    expect( loc.pathname, 'Pathname' ).toEqual( '/unexistant' )
+    expect( loc.matches.length, 'Matches').toEqual( 0 )
+    expect( loc.query.foo, 'Query').toEqual( 'bar' )
+  })
 });
