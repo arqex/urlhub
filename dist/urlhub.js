@@ -212,7 +212,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var matches = [];
 
 	    if( found ){
-	      matches.push( found.cb)
+	      matches.push( found.cb )
 	    }
 	    else if( !isChild ){
 	      console.error('There is no route match for ' + location);
@@ -228,9 +228,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      params: {}
 	    };
 
-	    c.params.forEach( function( p, i ){
-	      match.params[ p ] = found.params[i];
-	    });
+	    if( found ){
+	      c.params.forEach( function( p, i ){
+	        match.params[ p ] = found.params[i];
+	      });
+	    }
 
 	    return match;
 	  },

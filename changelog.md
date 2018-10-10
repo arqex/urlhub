@@ -1,3 +1,6 @@
+## v0.5.1
+* Fixes error on routes with parameters
+
 ## v0.5.0
 * `match()` now returns an empty a location object with an empty `matches` array if the route is not found.
 
