@@ -122,6 +122,7 @@ var prototype = {
           match = this.match( url, c.children, true );
           if( match.matches.length ){
             match.matches = [c.cb].concat( match.matches );
+            match.matchIds = [c.id].concat( match.matchIds );
             return match; // The recursive call will give all the info
           }
           else {
@@ -143,9 +144,11 @@ var prototype = {
     }
 
     var matches = [];
+    var matchIds = [];
 
     if( found ){
       matches.push( found.cb )
+      matchIds.push( found.id )
     }
     else if( !isChild ){
       console.error('There is no route match for ' + location);
@@ -153,6 +156,7 @@ var prototype = {
 
     match = {
       matches: matches,
+      matchIds: matchIds,
       pathname: path,
       search: parsed.search,
       query: qs.parse( parsed.search ),
@@ -189,7 +193,8 @@ var prototype = {
     });
 
     this.strategy.start();
-    return this.match( this.strategy.getLocation() );
+    this.location = this.match( this.strategy.getLocation() );
+    return this.location;
   },
   stop: function(){
     this.strategy.onChange( function(){} );

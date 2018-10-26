@@ -1,3 +1,7 @@
+# v0.6.0
+* Adds matchIds to the match object.
+* Updates testing dependencies.
+
 ## v0.5.1
 * Fixes error on routes with parameters
 

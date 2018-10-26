@@ -56,6 +56,7 @@ location = router.match('/users/937264923?foo=bar#my_hash');
 {
   hash: "#my_hash",
   matches: ["Users screen", "SingleUser"],
+  matchIds: ["/users/", "/users/:userId], 
   params: {userId: "937264923"},
   pathname: "/users/937264923",
   query: {foo: 'bar'},

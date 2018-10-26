@@ -36,6 +36,7 @@ describe( 'Hash - Listening to changes', function(){
       expect( location ).toEqual( {
         hash: '',
         matches: ['multiparam'],
+        matchIds: ['/multi/:param/route/:param2'],
         params: {param: 'a', param2: 'b'},
         pathname: path,
         query: {},
@@ -57,6 +58,7 @@ describe( 'Hash - Listening to changes', function(){
       expect( location ).toEqual( {
         hash: '',
         matches: ['root', 'sub', 'subparam'],
+        matchIds: [ '/', '/sub', '/sub/subparam/:pn' ],
         params: {pn: 'second'},
         pathname: path,
         query: {},

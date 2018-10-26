@@ -189,6 +189,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	          match = this.match( url, c.children, true );
 	          if( match.matches.length ){
 	            match.matches = [c.cb].concat( match.matches );
+	            match.matchIds = [c.id].concat( match.matchIds );
 	            return match; // The recursive call will give all the info
 	          }
 	          else {
@@ -210,9 +211,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 
 	    var matches = [];
+	    var matchIds = [];
 
 	    if( found ){
 	      matches.push( found.cb )
+	      matchIds.push( found.id )
 	    }
 	    else if( !isChild ){
 	      console.error('There is no route match for ' + location);
@@ -220,6 +223,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    match = {
 	      matches: matches,
+	      matchIds: matchIds,
 	      pathname: path,
 	      search: parsed.search,
 	      query: qs.parse( parsed.search ),
@@ -256,7 +260,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    this.strategy.start();
-	    return this.match( this.strategy.getLocation() );
+	    this.location = this.match( this.strategy.getLocation() );
+	    return this.location;
 	  },
 	  stop: function(){
 	    this.strategy.onChange( function(){} );
@@ -822,205 +827,226 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	'use strict'
-
-	var parseReg = /([^=?&]+)=?([^&]*)/g
-	var qFlat = __webpack_require__(5)
-	var qSet = __webpack_require__(6)
-
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	var q_flat_1 = __webpack_require__(5);
+	var q_set_1 = __webpack_require__(6);
+	var parseReg = /([^=?&]+)=?([^&]*)/g;
 	/**
+	 * @description
 	 * Converts an object to a query string and optionally flattens it.
-	 * @param  {Object} obj - the object to convert.
-	 * @return {String}
+	 *
+	 * @example
+	 * stringify({ a: 1 }) === 'a=1'
+	 *
+	 * stringify({ a: { b: 1 } }, true) === 'a[b]=1'
+	 *
+	 * @param obj The object to stringify.
+	 * @param deep If true the object will be flattened using query string syntax.
 	 */
-	exports.stringify = function stringify (obj, flat) {
-	  if (flat) obj = qFlat(obj)
-	  var keys = Object.keys(obj)
-	  if (!keys.length) return ''
-
-	  for (var i = 0, len = keys.length, key; i < len; i++) {
-	    key = keys[i]
-	    keys[i] = encodeURIComponent(key) + '=' + encodeURIComponent(obj[key])
-	  }
-
-	  return keys.join('&')
+	function stringify(obj, deep) {
+	    if (deep) {
+	        obj = q_flat_1.flatten(obj);
+	    }
+	    var keys = Object.keys(obj);
+	    if (!keys.length) {
+	        return "";
+	    }
+	    for (var i = 0, len = keys.length; i < len; i++) {
+	        var key = keys[i];
+	        keys[i] = encodeURIComponent(key) + "=" + encodeURIComponent(obj[key]);
+	    }
+	    return keys.join("&");
 	}
-
+	exports.stringify = stringify;
 	/**
+	 * @description
 	 * Parses a query string and optionally unflattens it.
-	 * @param  {String} str - the query string to parse.
-	 * @param  {Boolean} [deep] - if true the query will be unflattened.
-	 * @return {Object}
+	 *
+	 * @example
+	 * parse('a=1&b=2&') === "{ a: '1', b: '2' }"
+	 *
+	 * parse('a=1&b[c]=2', true) === "{ a: '1', b: { c: '1' } }"
+	 *
+	 * @param str The string to parse.
+	 * @param deep If true, nested querystring paths will be resolved.
 	 */
-	exports.parse = function (str, deep) {
-	  var set = deep ? qSet : qSet.flat
-	  var result = {}
-	  var part
-
-	  while ((part = parseReg.exec(str))) {
-	    set(result, decodeURIComponent(part[1]), decodeURIComponent(part[2]))
-	  }
-
-	  return result
+	function parse(str, deep) {
+	    var set = deep ? q_set_1.deep : q_set_1.shallow;
+	    var result = {};
+	    for (;;) {
+	        var part = parseReg.exec(str);
+	        if (!part) {
+	            break;
+	        }
+	        var prop = part[1], val = part[2];
+	        set(result, decodeURIComponent(prop), decodeURIComponent(val));
+	    }
+	    return result;
 	}
-
+	exports.parse = parse;
+	//# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports) {
 
-	var toString       = Object.prototype.toString;
-	var hasOwnProperty = Object.prototype.hasOwnProperty;
-
+	"use strict";
+	Object.defineProperty(exports, "__esModule", { value: true });
+	var _a = Object.prototype, toString = _a.toString, hasOwnProperty = _a.hasOwnProperty;
+	var OBJECT_TYPE = "[object Object]";
+	var ARRAY_TYPE = "[object Array]";
 	/**
 	 * @description
-	 * Go from regular object syntax to a querystring style object.
+	 * Creates a querystring style object from a nested one.
 	 *
 	 * @example
-	 * var result = unflatten({ a: { b: 1 }, c: { d: 1 } });
+	 * var result = flatten({ a: { b: 1 }, c: { d: 1 } });
 	 * result; //-> { "a[b]": 1, "c[d]": 2 }
 	 *
-	 * @param {Object} obj
+	 * @param obj The object to flatten.
 	 */
-	function qFlat (obj, path, result) {
-		var type = toString.call(obj);
-		if (result == null) {
-			if (type === "[object Object]") result = {};
-			else if (type === "[object Array]") result = [];
-			else return;
-		}
-
-		for (var key in obj) {
-			var val = obj[key];
-			if (val === undefined || !hasOwnProperty.call(obj, key)) continue;
-			switch (toString.call(val)) {
-				case "[object Array]":
-				case "[object Object]":
-					qFlat(val, join(path, key), result);
-					break;
-				default:
-					result[join(path, key)] = val;
-					break;
-			}
-		}
-
-		return result;
+	function flatten(obj, path, result) {
+	    var type = toString.call(obj);
+	    if (result === undefined) {
+	        if (type === OBJECT_TYPE) {
+	            result = {};
+	        }
+	        else if (type === ARRAY_TYPE) {
+	            result = [];
+	        }
+	        else {
+	            return;
+	        }
+	    }
+	    for (var key in obj) {
+	        /* istanbul ignore if */
+	        if (!hasOwnProperty.call(obj, key)) {
+	            continue;
+	        }
+	        var val = obj[key];
+	        if (val == null) {
+	            continue;
+	        }
+	        switch (toString.call(val)) {
+	            case ARRAY_TYPE:
+	            case OBJECT_TYPE:
+	                flatten(val, join(path, key), result);
+	                break;
+	            default:
+	                result[join(path, key)] = val;
+	                break;
+	        }
+	    }
+	    return result;
 	}
-
-	function join (path, key) {
-		return path != null
-			? path + "[" + key + "]"
-			: key;
+	exports.flatten = flatten;
+	/**
+	 * Join path keys using query string `a[b]` style syntax.
+	 */
+	function join(path, key) {
+	    return path != null ? path + "[" + key + "]" : key;
 	}
-
-	module.exports = qFlat;
-
+	//# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 6 */
 /***/ (function(module, exports) {
 
 	"use strict";
-
-	var matchArray   = /[^\[\]]+|\[\]/g;
+	Object.defineProperty(exports, "__esModule", { value: true });
+	var matchArray = /[^\[\]]+|\[\]/g;
 	var matchInteger = /^\d+$/;
-	var temp         = [];
-
-	/*
+	var temp = [];
+	/**
 	 * @description
 	 * A setter for querystring style fields like "a[b][c]".
-	 * The setter will create arrays for repeat keys.
+	 * The setter will create arrays for repeat keys and supports the "[]" push syntax.
 	 *
-	 * @param {Object} obj
-	 * @param {String} path
-	 * @param {*} val
-	 */
-	function qSet (obj, path, val) {
-		var keys = path === "" ? [""] : path.match(matchArray);
-		var len  = keys.length;
-		var cur  = obj;
-		var key, prev, next, exist;
-
-		for (var i = 0; i < len; i++) {
-			prev = cur;
-			key  = keys[i];
-			next = keys[i + 1];
-			if (key === "[]") key = cur.length;
-			// Make path as we go.
-			cur = (exist = typeof cur === "object" && key in cur)
-				? cur[key]
-				// Check if the next path is an explicit array.
-				: cur[key] = (next === "[]" || matchInteger.test(next))
-					? []
-					: {};
-		}
-
-		prev[key] = exist ? temp.concat(cur, val) : val;
-
-		return obj;
-	};
-
-	/**
-	 * Like qset but doesn't resolve nested params such as a[b][c].
+	 * @example
+	 * deep({}, "a[b][c]", 1) // { a: { b: { c: 1 } } }
 	 *
-	 * @param {Object} obj
-	 * @param {String} key
-	 * @param {*} val
+	 * @param obj The object to set a value on.
+	 * @param path The querystring path to set.
+	 * @param value The value to set at the path.
 	 */
-	function fSet (obj, key, val) {
-		key = arrayPushIndexes(obj, key);
-		obj[key] = key in obj
-			? temp.concat(obj[key], val)
-			: val;
-		return obj;
+	function deep(obj, path, value) {
+	    var keys = path === "" ? [""] : path.match(matchArray);
+	    var len = keys.length;
+	    var cur = obj;
+	    var prev;
+	    var key;
+	    var exists;
+	    for (var i = 0; i < len; i++) {
+	        prev = cur;
+	        key = keys[i];
+	        var next = keys[i + 1];
+	        if (key === "[]") {
+	            key = cur.length;
+	        }
+	        // Make path as we go.
+	        cur = (exists = typeof cur === "object" && key in cur)
+	            ? cur[key]
+	            : // Check if the next path is an explicit array.
+	                (cur[key] = next === "[]" || matchInteger.test(next) ? [] : {});
+	    }
+	    prev[key] = exists ? temp.concat(cur, value) : value;
+	    return obj;
 	}
-
+	exports.deep = deep;
+	/**
+	 * @description
+	 * Appends to an object using query string syntax with "[]" syntax push support.
+	 *
+	 * @example
+	 * shallow({}, "a[b][c]", 1) // { "a[b][c]": 1 }
+	 * shallow({}, "a[]", 1) // { a: [1] }
+	 *
+	 * @param obj The object to set a value on.
+	 * @param path The querystring path to set.
+	 * @param value The value to set at the path.
+	 */
+	function shallow(obj, key, val) {
+	    key = arrayPushIndexes(obj, key);
+	    obj[key] = key in obj ? temp.concat(obj[key], val) : val;
+	    return obj;
+	}
+	exports.shallow = shallow;
 	/**
 	 * Given a qs style key and an object will convert array push syntax to integers.
 	 * Eg: a[b][] -> a[b][0]
-	 *
-	 * @param {Object} obj
-	 * @param {String} key
-	 * @return {String}
 	 */
-	function arrayPushIndexes (obj, key) {
-		var path = key.split("[]");
-		if (path.length === 1) return key;
-		var cur = path[0];
-		var keys = Object.keys(obj);
-
-		for (var i = 1, len = path.length; i < len; i++) {
-			cur += "[" + findLastIndex(keys, cur) + "]" + path[i];
-		}
-
-		return cur;
+	function arrayPushIndexes(obj, key) {
+	    var path = key.split("[]");
+	    if (path.length === 1) {
+	        return key;
+	    }
+	    var cur = path[0];
+	    var keys = Object.keys(obj);
+	    for (var i = 1, len = path.length; i < len; i++) {
+	        cur += "[" + findLastIndex(keys, cur) + "]" + path[i];
+	    }
+	    return cur;
 	}
-
 	/**
 	 * Given a path to push to will return the next valid index if possible.
 	 * Eg: a[b][] -> 0 // if array is empty.
-	 *
-	 * @param {Array} keys
-	 * @param {String} path
-	 * @return {Number}
 	 */
-	function findLastIndex (keys, path) {
-		var last = -1;
-
-		for (var key, i = keys.length; i--;) {
-			key = keys[i];
-			if (key.indexOf(path) !== 0) continue;
-			key = key.replace(path, "");
-			key = key.slice(1, key.indexOf("]"));
-			if (key > last) last = Number(key);
-		}
-
-		return last + 1;
+	function findLastIndex(keys, path) {
+	    var last = -1;
+	    for (var i = keys.length; i--;) {
+	        var key = keys[i];
+	        if (key.indexOf(path) !== 0) {
+	            continue;
+	        }
+	        var index = Number(key.replace(path, "").slice(1, key.indexOf("]") - 1));
+	        if (index > last) {
+	            last = index;
+	        }
+	    }
+	    return last + 1;
 	}
-
-	qSet.flat      = fSet;
-	module.exports = qSet;
-
+	//# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 7 */
