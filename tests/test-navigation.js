@@ -70,6 +70,9 @@ describe( 'Listening to changes', function(){
   });
 
   it('basePath test', function( done ){
+    // Make sure we are in the expected route
+    window.history.pushState({}, '', '/sub/subparam/second');
+
     var basePath = '/sub/subparam',
       router = createRouter({strategy: pushStrategy, basePath: basePath})
     ;
