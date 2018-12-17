@@ -11,15 +11,12 @@ routes = {
 
 // parseUrl function needed for testing
 var parseUrl;
-if( typeof global === 'undefined' || !global.parseUrl ){
+if( typeof global === 'undefined' ){
   parseUrl = function( url ){
     var a = document.createElement('a');
     a.href = url;
     return a;
   };
-}
-else {
-  parseUrl = global.parseUrl;
 }
 
 // The lib
@@ -105,7 +102,7 @@ var prototype = {
       candidates = this.routes;
     }
 
-    var parsed = parseUrl( url );
+    var parsed = (this.strategy.parseUrl || parseUrl)( url );
     path =  parsed.pathname;
 
     // Normalize pathname

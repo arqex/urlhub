@@ -1,4 +1,4 @@
-window.routes = [
+var routes = [
   { path: '/', cb: 'root', children: [
     { path: 'sub', cb: 'sub', children: [
       { path: '/', cb: 'rootChild'},
@@ -13,3 +13,10 @@ window.routes = [
   { path: 'multi/:param/route/:param2', cb: 'multiparam'},
   { path: '*', cb: 'notfound' }
 ];
+
+if( typeof global !== 'undefined' ){
+  module.exports = routes;
+}
+else {
+  window.routes = routes;
+}

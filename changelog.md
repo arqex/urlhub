@@ -1,5 +1,6 @@
 # v0.7.1
 * Adds the nodeStrategy for running the router in the server.
+* Updates the urlhub to be run in a node environment.
 
 # v0.7.0
 * Updates testing dependencies.

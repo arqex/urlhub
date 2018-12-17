@@ -1,41 +1,40 @@
+var qs = require('mini-querystring');
 var onChange = function () {};
 
 var nodeStrategy = {
   init: function( options ){
-    this.basePath = options.basePath || '';
-    if( this.basePath.slice(-1) === '/' ){
-      this.basePath = this.basePath.slice(0, -1);
-		}
-		this.history = [ this.basePath + (options.initialLocation || '/') ];
+		this.history = [ options.initialLocation || '/' ];
   },
   start: function(){
-    me.emit();
+    this.emit();
   },
   push: function( location ){
-		this.history.push( this.basePath + location );
+		this.history.push( location );
     this.emit();
   },
   replace: function( location ){
-		this.history[ this.history.length ] = this.basePath + location;
+		this.history[ this.history.length ] = location;
     this.emit();
   },
   onChange: function( cb ){
     onChange = cb;
   },
   getLocation: function(){
-    var l = this.history[ this.history.length ],
-      basePathLength = this.basePath.length
-    ;
-
-    if( l.slice(0, basePathLength) === this.basePath ){
-      l = l.slice( basePathLength );
-    }
-
-    return l;
+    return this.history[ this.history.length - 1 ];
   },
   emit: function(){
     onChange && onChange( this.getLocation() );
-  }
+	},
+	parseUrl: function( str ){
+		var parts = str.split('?')
+		var searchParts = parts[1] ? parts[1].split('#') : [];
+		return {
+			pathname: parts[0],
+			search: searchParts[0] ? '?' + searchParts[0] : '',
+			hash: searchParts[1] ? '#' + searchParts[1] : '',
+			query: searchParts[0] ? qs.parse( searchParts[0] ) : {}
+		}
+	}
 };
 
 module.exports = nodeStrategy;
