@@ -1,4 +1,5 @@
 var onChange = function () {};
+
 var pushStrategy = {
   init: function( options ){
     this.basePath = options.basePath || '';
@@ -6,7 +7,6 @@ var pushStrategy = {
       this.basePath = this.basePath.slice(0, -1);
     }
   },
-
   start: function(){
     var me = this;
 
