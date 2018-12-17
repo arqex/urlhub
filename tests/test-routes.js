@@ -159,7 +159,6 @@ describe( 'Route match test', function(){
     router.setRoutes([]);
 
     var loc = router.match('/unexistant?foo=bar')
-    console.log( loc )
     
     expect( loc.route, 'Route' ).toEqual( false )
     expect( loc.pathname, 'Pathname' ).toEqual( '/unexistant' )

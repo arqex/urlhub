@@ -1,5 +1,8 @@
-# v0.6.1
+# v0.7.1
 * Adds the nodeStrategy for running the router in the server.
+
+# v0.7.0
+* Updates testing dependencies.
 
 # v0.6.0
 * Adds matchIds to the match object.
