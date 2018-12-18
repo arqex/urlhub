@@ -34,7 +34,13 @@ var nodeStrategy = {
 			hash: searchParts[1] ? '#' + searchParts[1] : '',
 			query: searchParts[0] ? qs.parse( searchParts[0] ) : {}
 		}
-	}
+  },
+  back: function(){
+    if( this.history.length > 1 ){
+      this.history.pop()
+    }
+    this.emit();
+  }
 };
 
 module.exports = nodeStrategy;

@@ -1,3 +1,6 @@
+# v0.7.1
+* The implementation of the method `back` has been moved to the strategy to not fail in node environments.
+
 # v0.7.0
 * Adds the nodeStrategy for running the router in the server.
 * Updates the urlhub to be run in a node environment.

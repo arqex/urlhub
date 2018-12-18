@@ -40,6 +40,9 @@ var hashStrategy = {
 	},
 	emit: function () {
 		onChange(this.getLocation());
+	},
+	back: function () {
+    window.history.back();
 	}
 };
 

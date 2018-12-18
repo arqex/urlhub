@@ -302,7 +302,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.updateLocation('replace', location);
 	  },
 	  back: function(){
-	    window.history.back();
+	    this.strategy.back();
 	  },
 	  updateLocation: function( method, location ){
 	    var current = this.strategy.getLocation();
@@ -1092,7 +1092,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  emit: function(){
 	    onChange && onChange( this.getLocation() );
-	  }
+	  },
+		back: function () {
+	    window.history.back();
+		}
 	};
 
 	module.exports = pushStrategy;
@@ -1144,6 +1147,9 @@ return /******/ (function(modules) { // webpackBootstrap
 		},
 		emit: function () {
 			onChange(this.getLocation());
+		},
+		back: function () {
+	    window.history.back();
 		}
 	};
 

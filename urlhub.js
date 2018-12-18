@@ -235,7 +235,7 @@ var prototype = {
     this.updateLocation('replace', location);
   },
   back: function(){
-    window.history.back();
+    this.strategy.back();
   },
   updateLocation: function( method, location ){
     var current = this.strategy.getLocation();

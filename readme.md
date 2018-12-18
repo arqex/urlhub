@@ -114,15 +114,16 @@ router.onBeforeChange( function(location){
     return '/login';
   }
 
-  // In any other case, don't intercept the route, re
+  // In any other case, don't intercept the route
   return location;
 })
 ```
 
 ## What else?
 That's basically all the functionality. This is still a work in progress, still need:
-* Document the API and options
+* Document the API and options.
 * There is a `Link` React component shipped. Document it.
+* How to use in node.js without a browser.
 * Write an article to make clear all the advantages.
 
 

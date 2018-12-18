@@ -42,7 +42,10 @@ var pushStrategy = {
   },
   emit: function(){
     onChange && onChange( this.getLocation() );
-  }
+  },
+	back: function () {
+    window.history.back();
+	}
 };
 
 module.exports = pushStrategy;
