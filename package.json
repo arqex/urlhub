@@ -1,6 +1,6 @@
 {
   "name": "urlhub",
-  "version": "0.7.1",
+  "version": "0.7.0",
   "description": "Another router library, yet the simplest one.",
   "main": "urlhub.js",
   "scripts": {
@@ -27,11 +27,11 @@
     "gulp": "^3.9.1",
     "gulp-rename": "^1.2.2",
     "jasmine": "^3.3.1",
-    "jasmine-core": "^3.3.0",
     "karma": "^3.1.3",
     "karma-cli": "^2.0.0",
     "karma-jasmine": "^2.0.1",
     "karma-phantomjs-launcher": "^1.0.4",
+    "natives": "^1.1.6",
     "webpack-stream": "^3.2.0"
   }
 }

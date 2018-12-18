@@ -11,7 +11,7 @@ routes = {
 
 // parseUrl function needed for testing
 var parseUrl;
-if( typeof global === 'undefined' ){
+if( typeof window !== 'undefined' ){
   parseUrl = function( url ){
     var a = document.createElement('a');
     a.href = url;

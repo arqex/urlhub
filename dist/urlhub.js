@@ -65,7 +65,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var parser = __webpack_require__(2);
+	var parser = __webpack_require__(2);
 	var qs = __webpack_require__(4);
 
 	/*
@@ -78,15 +78,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// parseUrl function needed for testing
 	var parseUrl;
-	if( typeof global === 'undefined' || !global.parseUrl ){
+	if( typeof window !== 'undefined' ){
 	  parseUrl = function( url ){
 	    var a = document.createElement('a');
 	    a.href = url;
 	    return a;
 	  };
-	}
-	else {
-	  parseUrl = global.parseUrl;
 	}
 
 	// The lib
@@ -172,7 +169,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      candidates = this.routes;
 	    }
 
-	    var parsed = parseUrl( url );
+	    var parsed = (this.strategy.parseUrl || parseUrl)( url );
 	    path =  parsed.pathname;
 
 	    // Normalize pathname
@@ -380,7 +377,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return location.pathname + search + location.hash;
 	}
 
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ }),
 /* 2 */
@@ -1053,6 +1049,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ (function(module, exports) {
 
 	var onChange = function () {};
+
 	var pushStrategy = {
 	  init: function( options ){
 	    this.basePath = options.basePath || '';
@@ -1060,7 +1057,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	      this.basePath = this.basePath.slice(0, -1);
 	    }
 	  },
-
 	  start: function(){
 	    var me = this;
 
