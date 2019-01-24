@@ -14,7 +14,7 @@ export default function Link( props ){
     }
   }
 
-  attrs.onClick = function(e){ onClick(e, props.to)};
+  attrs.onClick = function(e){ onClick(e, props.to, props.onClick) };
 
   return React.createElement('a', attrs, props.children);
 }
@@ -29,14 +29,19 @@ function translate( path ){
   return path;
 }
 
-function onClick( e, to ){
-  e.preventDefault();
+function onClick( e, to, onClick ){
+  if ( onClick ) onClick(e);
 
-  if( isHash() ){
-    document.location.hash = '#' + to;
+  if ( !e.defaultPrevented ){
+    e.preventDefault();
+
+    if( isHash() ){
+      document.location.hash = '#' + to;
+    }
+    else {
+      history.pushState({},'',to);
+      window.onpopstate();
+    }
   }
-  else {
-    history.pushState({},'',to);
-    window.onpopstate();
-  }
+
 }
