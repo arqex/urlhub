@@ -1,3 +1,6 @@
+# v0.7.2
+* Allow to add a onClick handler to the Link component
+
 # v0.7.1
 * The implementation of the method `back` has been moved to the strategy to not fail in node environments.
 
