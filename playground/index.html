@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urlhub playground</title>
+  <script type="module">
+    import {Urlhub, PushStrategy, HashStrategy} from './dist/urlhub.mjs';
+
+    const routes = [
+      {path: '/', cb: 'Root'},
+      {path: '/home', cb: 'Sweet Home'},
+      {path: '/users', cb: 'Users screen', children: [
+        {path: '/:userId', cb: 'SingleUser'}
+      ]},
+      {path: '/*', cb: '404'}
+    ];
+
+    function updateConsole(location) {
+      console.log('Updating to', location.fullpath);
+      document.getElementById('console').innerHTML = JSON.stringify(location, null, 2);
+    }
+
+    const currentStrategy = 'push';
+    const Strategy = currentStrategy === 'push' ? PushStrategy : HashStrategy;
+
+    window.addEventListener( 'click', e => {
+      if( e.target.href && currentStrategy === 'push') {
+        e.preventDefault();
+        const href = e.target.href.replace('/#', '');
+        if( href !== window.location.href ) {
+          history.pushState({href}, '', href);
+        }
+      }
+    });
+
+    const router = new Urlhub({strategy: Strategy});
+    router.setRoutes(routes);
+    router.onChange( updateConsole );
+    router.onBeforeChange( (location) => {
+      if( location.fullpath === '/users/1' ) {
+        return '/users/redirected_by_before_change';
+      }
+      return location;
+    });
+    console.log(Urlhub);
+    router.start();
+    updateConsole(router.location);
+  </script>
+</head>
+<body>
+  <div>
+    <ul>
+      <li><a href="/">Root</a></li>
+      <li><a href="/#/home">Home</a></li>
+      <li><a href="/#/users">Users</a></li>
+      <li><a href="/#/users/1">Single user</a></li>
+      <li><a href="/#/other">404</a></li>
+    </ul>
+  </div>
+  <pre id="console" style="background: #eee; padding: 20px">
+
+  </pre>
+</body>
+</html>
