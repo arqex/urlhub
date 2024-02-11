@@ -5,7 +5,7 @@ import { parse as parseQuery } from "./vendor/mini-querystring";
 export function toRegexRoutes<T>( routes: UrlhubRoute<T>[], parent?: string ): RegexRoute<T>[] {
   const parsedRoutes: RegexRoute<T>[] = [];
   routes.forEach( route => {
-    if( route.path === '/*' ) {
+    if( route.path === '/*' || route.path == '*') {
       return parsedRoutes.push({
         regex: /(.*)/,
         id: '/*',

@@ -107,4 +107,11 @@ export class Urlhub<T> {
       return console.error('Urlhub: There is no route match for ' + fullpath );
     }
   }
+
+  push( fullpath: string ) {
+    this.strategy?.push( fullpath );
+  }
+  replace( fullpath: string ) {
+    this.strategy?.replace( fullpath );
+  }
 }

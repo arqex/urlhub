@@ -1,6 +1,6 @@
 {
   "name": "urlhub",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "description": "Another router library, yet the simplest one.",
   "main": "dist/urlhub.js",
   "module": "dist/urlhub.mjs",
@@ -10,7 +10,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/arqex/url-navigation/tree/master/packages/urlhub"
+    "url": "https://github.com/arqex/urlhub"
   },
   "scripts": {
     "prepare": "rm -rf .husky/_ && husky install",

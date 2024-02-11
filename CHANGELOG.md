@@ -1,6 +1,7 @@
 # v1.0.0
 * Rewrites source code to typescript
 * Updates the push strategy to use a timer to detect changes
+* Push and replace only accepts a string now
 
 # v0.8.5
 * Adds multiple listener support to strategies.
