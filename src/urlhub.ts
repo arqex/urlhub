@@ -14,11 +14,11 @@ export class Urlhub<T> {
     const { strategy, ...options} = ops;
     this.options = options;
     if( strategy ) {
-      this.setStrategy(strategy );
+      this.setStrategy( strategy );
     }
   }
 
-  setStrategy( Strategy: UrlhubStrategy ) {
+  setStrategy( Strategy: typeof UrlhubStrategy ) {
     // @ts-ignore
     this.strategy = new Strategy( this.options );
   }

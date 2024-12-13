@@ -3,7 +3,7 @@
 export interface UrlhubOptions {
   initialLocation?: string;
   basePath?: string;
-  strategy?: UrlhubStrategy;
+  strategy?: typeof UrlhubStrategy;
 }
 
 export interface UrlhubLocation<T> {

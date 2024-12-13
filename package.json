@@ -1,6 +1,6 @@
 {
   "name": "urlhub",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.3",
   "description": "Another router library, yet the simplest one.",
   "main": "dist/urlhub.js",
   "module": "dist/urlhub.mjs",
